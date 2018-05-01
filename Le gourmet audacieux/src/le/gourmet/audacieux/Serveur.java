@@ -51,7 +51,7 @@ public class Serveur {
                     {
                         return new Serveur(login);
                     }else{
-                        System.out.println("Aucun utilisateur trouver");
+                        System.out.println("Aucun utilisateur trouvé");
                     }
 
                 }else{
