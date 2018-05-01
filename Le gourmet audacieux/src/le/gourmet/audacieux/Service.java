@@ -11,7 +11,6 @@ package le.gourmet.audacieux;
  */
 public interface Service {
     
-    
     double getPrix();
     String getLibelle();
     String getCategorie();

@@ -675,9 +675,7 @@ public class ApplicationSalle extends javax.swing.JFrame {
     private void loginBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_loginBtnMouseClicked
             
         serveur = Serveur.authenticate(loginField.getText(), passwordField.getText());
-        
-        System.out.println(serveur.getLogin());
-        
+         
         if(serveur != null)
         {   
             System.out.println("Afficher une nouvelle fenêtre pour "+ serveur.getLogin());
