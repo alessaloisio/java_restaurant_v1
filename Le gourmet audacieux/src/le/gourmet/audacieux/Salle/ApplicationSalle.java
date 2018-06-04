@@ -40,6 +40,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import network.*;
+
 
 /**
  *
@@ -57,6 +59,9 @@ public class ApplicationSalle extends javax.swing.JFrame {
     private String tableCourantCode = null;
     private int nbTableOccupe = 0;
 
+    private NetworkBasicClient nbc;
+    private NetworkBasicServer nbs;
+
     /**
      * Creates new form ApplicationSalle
      */
@@ -68,6 +73,9 @@ public class ApplicationSalle extends javax.swing.JFrame {
         initComponents();
         
         clock();
+        
+        nbc = new NetworkBasicClient("localhost", 55555);
+        //nbs = new NetworkBasicServer(55554, this.PlatsPretCheckBox);
         
     }
     
@@ -183,7 +191,7 @@ public class ApplicationSalle extends javax.swing.JFrame {
         platsAttente = new javax.swing.JList<>();
         envoyerBtn = new javax.swing.JButton();
         jCheckBox1 = new javax.swing.JCheckBox();
-        jCheckBox2 = new javax.swing.JCheckBox();
+        PlatsPretCheckBox = new javax.swing.JCheckBox();
         jButton7 = new javax.swing.JButton();
         jLabel19 = new javax.swing.JLabel();
         placesLabel = new javax.swing.JLabel();
@@ -275,7 +283,7 @@ public class ApplicationSalle extends javax.swing.JFrame {
         jLabel17.setText("NON PAYEE");
         jLabel17.setFocusable(false);
 
-        boissonAdd.setText("ajouter");
+        boissonAdd.setText("Ajouter");
         boissonAdd.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 boissonAddMouseClicked(evt);
@@ -308,7 +316,7 @@ public class ApplicationSalle extends javax.swing.JFrame {
         jCheckBox1.setEnabled(false);
         jCheckBox1.setLabel("Commande envoyée");
 
-        jCheckBox2.setLabel("Plats prêts");
+        PlatsPretCheckBox.setLabel("Plats prêts");
 
         jButton7.setLabel("Lire plats disponibles");
 
@@ -365,7 +373,7 @@ public class ApplicationSalle extends javax.swing.JFrame {
                     .addGroup(loggedFrameLayout.createSequentialGroup()
                         .addComponent(jCheckBox1)
                         .addGap(18, 18, 18)
-                        .addComponent(jCheckBox2)
+                        .addComponent(PlatsPretCheckBox)
                         .addGap(47, 47, 47)
                         .addComponent(jButton7))))
             .addGroup(loggedFrameLayout.createSequentialGroup()
@@ -484,7 +492,7 @@ public class ApplicationSalle extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 20, Short.MAX_VALUE)
                 .addGroup(loggedFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jCheckBox1)
-                    .addComponent(jCheckBox2)
+                    .addComponent(PlatsPretCheckBox)
                     .addComponent(jButton7))
                 .addContainerGap())
         );
@@ -907,10 +915,13 @@ public class ApplicationSalle extends javax.swing.JFrame {
     }//GEN-LAST:event_btnDessertsMouseClicked
 
     private void envoyerBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_envoyerBtnMouseClicked
-        
+        String platsEnvoi = new String();
         //Gérer le cuisine/salle
         // pour le moment mettre tous les plats en mode servis
         for(CommandePlat item : table.get(tableCourant).plats){
+ 
+            platsEnvoi += tableCourantCode+'&'+item.toString()+';';
+            
             if(item.plat.servis == false){
                 item.plat.servis = true;
             }
@@ -920,6 +931,9 @@ public class ApplicationSalle extends javax.swing.JFrame {
         listPlats.setModel(createListData(true));
         
         System.out.println(table.get(tableCourant).addition);
+        
+        //System.out.println(platsEnvoi);
+        nbc.sendString(platsEnvoi);
     }//GEN-LAST:event_envoyerBtnMouseClicked
 
     private void boissonAddMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_boissonAddMouseClicked
@@ -1002,6 +1016,7 @@ public class ApplicationSalle extends javax.swing.JFrame {
     }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JCheckBox PlatsPretCheckBox;
     private javax.swing.JButton boissonAdd;
     private javax.swing.JTextField boissonAjout;
     private javax.swing.JButton btnDesserts;
@@ -1023,7 +1038,6 @@ public class ApplicationSalle extends javax.swing.JFrame {
     private javax.swing.JButton envoyerBtn;
     private javax.swing.JButton jButton7;
     private javax.swing.JCheckBox jCheckBox1;
-    private javax.swing.JCheckBox jCheckBox2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;

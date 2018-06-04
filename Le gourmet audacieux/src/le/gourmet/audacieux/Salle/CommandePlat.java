@@ -19,4 +19,8 @@ public class CommandePlat {
         this.quantite = quantite;
     }
     
+    public String toString(){
+        return String.valueOf(this.quantite)+':'+this.plat.code+':'+this.plat.getLibelle();
+        //table&quantité:code:libelle
+    }
 }

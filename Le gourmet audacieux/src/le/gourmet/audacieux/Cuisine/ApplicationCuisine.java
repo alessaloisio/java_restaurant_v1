@@ -5,17 +5,37 @@
  */
 package le.gourmet.audacieux.Cuisine;
 
+import network.*;
+import StringSlicer.*;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.util.LinkedHashSet;
+import javax.swing.JFrame;
+import javax.swing.table.DefaultTableModel;
 /**
  *
  * @author Alessandro Aloisio
  */
 public class ApplicationCuisine extends javax.swing.JFrame {
 
+    NetworkBasicServer nbs;
+    NetworkBasicClient nbc;
+    StringSlicer ss;
+    DefaultTableModel model;
+
     /**
      * Creates new form ApplicationCuisine
      */
     public ApplicationCuisine() {
         initComponents();
+        
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.setSize(485, 450);
+        
+        nbs = new NetworkBasicServer(55555, this.CmdRecueCheckBox);
+        DefaultTableModel model = new DefaultTableModel();
+
+        //nbc = new NetworkBasicClient("localhost", 55554);
     }
 
     /**
@@ -27,31 +47,171 @@ public class ApplicationCuisine extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        showCommande = new javax.swing.JButton();
+        jButton2 = new javax.swing.JButton();
+        CmdRecueCheckBox = new javax.swing.JCheckBox();
         jLabel1 = new javax.swing.JLabel();
+        jSeparator1 = new javax.swing.JSeparator();
+        jLabel2 = new javax.swing.JLabel();
+        jLabelCommande = new javax.swing.JLabel();
+        jToggleButton1 = new javax.swing.JToggleButton();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        jTablePrep = new javax.swing.JTable();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        jTableCommande = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jLabel1.setText("Cuisine");
+        showCommande.setText("Voir commande");
+        showCommande.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                showCommandeMouseClicked(evt);
+            }
+        });
+
+        jButton2.setText("Commande reçue !");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+
+        CmdRecueCheckBox.setText("Commande reçue");
+
+        jLabel1.setText("Liste des plats de la commande :");
+
+        jLabel2.setText("Plats en préparation :");
+
+        jLabelCommande.setText(">>");
+
+        jToggleButton1.setText("Prévenir plats à enlever");
+
+        jTablePrep.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {},
+                {},
+                {},
+                {}
+            },
+            new String [] {
+
+            }
+        ));
+        jScrollPane3.setViewportView(jTablePrep);
+
+        jTableCommande.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {},
+                {},
+                {},
+                {}
+            },
+            new String [] {
+
+            }
+        ));
+        jScrollPane4.setViewportView(jTableCommande);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(130, 130, 130)
-                .addComponent(jLabel1)
-                .addContainerGap(236, Short.MAX_VALUE))
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel1)
+                        .addGap(122, 122, 122)
+                        .addComponent(jButton2))
+                    .addComponent(jLabelCommande)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(31, 31, 31)
+                        .addComponent(jToggleButton1))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(CmdRecueCheckBox)
+                        .addGap(44, 44, 44)
+                        .addComponent(showCommande))
+                    .addComponent(jSeparator1)
+                    .addComponent(jLabel2)
+                    .addComponent(jScrollPane3)
+                    .addComponent(jScrollPane4))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(36, 36, 36)
-                .addComponent(jLabel1)
-                .addContainerGap(250, Short.MAX_VALUE))
+                .addGap(20, 20, 20)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(showCommande)
+                    .addComponent(CmdRecueCheckBox))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jLabelCommande)
+                .addGap(11, 11, 11)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(jButton2))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(4, 4, 4)
+                .addComponent(jLabel2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 131, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
+                .addComponent(jToggleButton1)
+                .addGap(18, 18, 18))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void showCommandeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_showCommandeMouseClicked
+        // TODO add your handling code here:
+        String[] donneesCommande = new String[4];
+        String msg = new String();
+        msg = nbs.getMessage();
+
+        this.jLabelCommande.setText(">> " + msg);
+        
+        ss = new StringSlicer(msg, ";");
+        ss.getComponents(true);
+        
+        DefaultTableModel model = new DefaultTableModel();
+        model.addColumn("Quantité");
+        model.addColumn("Plat");
+        model.addColumn("Table");
+        model.addColumn("Heure");
+        LinkedHashSet<String> hashSet = ss.listUniqueComponents();
+
+        
+        for(String s: hashSet)
+        {
+            String[] tmp = s.split("&");
+            
+            donneesCommande[0] = tmp[0];
+            
+            tmp = tmp[1].split(":");
+            
+            donneesCommande[1] = tmp[0];
+            donneesCommande[2] = tmp[1];
+            donneesCommande[3] = tmp[2];
+            
+            SimpleDateFormat time_formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+            String current_time_str = time_formatter.format(System.currentTimeMillis());
+            
+            //System.out.println(donneesCommande[0] + donneesCommande[1] + donneesCommande[2] + donneesCommande[3]);
+            
+            model.addRow(new Object[] { donneesCommande[1] , donneesCommande[2] , donneesCommande[0], current_time_str });
+            
+        }
+
+        this.jTableCommande.setModel(model);
+    }//GEN-LAST:event_showCommandeMouseClicked
 
     /**
      * @param args the command line arguments
@@ -89,6 +249,17 @@ public class ApplicationCuisine extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JCheckBox CmdRecueCheckBox;
+    private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabelCommande;
+    private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JScrollPane jScrollPane4;
+    private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JTable jTableCommande;
+    private javax.swing.JTable jTablePrep;
+    private javax.swing.JToggleButton jToggleButton1;
+    private javax.swing.JButton showCommande;
     // End of variables declaration//GEN-END:variables
 }
