@@ -5,7 +5,11 @@
  */
 package le.gourmet.audacieux.Salle;
 
+import Properties.Props;
+import Properties.XMLSerial;
 import java.util.Hashtable;
+import java.util.Properties;
+import java.util.Vector;
 
 /**
  *
@@ -16,16 +20,28 @@ public class Serveur {
     private static Hashtable<String, String> logins;
     
     public String Nom;
-    public String Prenom;
-    private int numCarteId;
+    public String Prenom;   
     
     private String login;
     
+    static private Properties prop;
+    
     static {
+        String mdp = null;
         logins = new Hashtable<String, String>();
-        
-        logins.put("aloisio", "aloiale");
-        logins.put("garcia", "gardan");
+
+        Vector<String> servers = XMLSerial.getServers();
+        prop = Props.getProperties();
+        for(int i=0; i<servers.size(); i++)
+        {
+            mdp = prop.getProperty(servers.elementAt(i), null);
+            
+            if(mdp != null)
+            {
+                logins.put(servers.elementAt(i), mdp);
+                System.out.println("LOGIN" + servers.elementAt(i) + mdp);
+            }
+        }
     }
     
     public Serveur(String login) {

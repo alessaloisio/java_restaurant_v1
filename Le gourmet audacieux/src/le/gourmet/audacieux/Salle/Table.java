@@ -5,6 +5,7 @@
  */
 package le.gourmet.audacieux.Salle;
 
+import java.io.Serializable;
 import java.util.Hashtable;
 import java.util.Vector;
 
@@ -12,7 +13,7 @@ import java.util.Vector;
  *
  * @author Alessandro Aloisio
  */
-public class Table {
+public class Table implements Serializable{
     
     public static Hashtable<String, Object> tables;
     

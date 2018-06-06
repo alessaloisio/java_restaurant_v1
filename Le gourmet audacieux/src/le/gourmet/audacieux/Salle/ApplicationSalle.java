@@ -5,6 +5,8 @@
  */
 package le.gourmet.audacieux.Salle;
 
+import Properties.Props;
+import Properties.XMLSerial;
 import le.gourmet.audacieux.Salle.CategoriePlat;
 import le.gourmet.audacieux.Salle.PlatPrincipal;
 import le.gourmet.audacieux.Salle.Serveur;
@@ -20,16 +22,27 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.MouseEvent;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import static java.lang.Thread.sleep;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Properties;
 import java.util.Set;
 import java.util.Vector;
 import javax.swing.DefaultListModel;
@@ -59,29 +72,46 @@ public class ApplicationSalle extends javax.swing.JFrame {
     private String tableCourantCode = null;
     private int nbTableOccupe = 0;
 
+    private NetworkBasicServer nbs, nbsPlatsPrets;
     private NetworkBasicClient nbc;
-    private NetworkBasicServer nbs;
-
+    
+    Properties prop;
+    
     /**
      * Creates new form ApplicationSalle
      */
     public ApplicationSalle() {
         
         // INIT
-        setTitle("Restaurant \"Le gourmet audacieux\"");
+        prop = Props.getProperties();
+        
+        setTitle(prop.getProperty("nomResto"));
       
         initComponents();
         
         clock();
+//        Props.setProperties("portServ1", "55555");
+//        Props.setProperties("portServ2", "55554");
+//        Props.setProperties("portServ3", "55553");
+//        Props.setProperties("nomResto", "Restaurant \"Le Gourmet Audacieux\"");
+//        XMLSerial.addServeur("garcia", "gardan");
+        nbs = new NetworkBasicServer(Integer.parseInt(prop.getProperty("portServ2")), this.CommandeEnvoyeeCheckBox);
+        nbsPlatsPrets = new NetworkBasicServer(Integer.parseInt(prop.getProperty("portServ3")), this.PlatsPretCheckBox);
         
-        nbc = new NetworkBasicClient("localhost", 55555);
-        //nbs = new NetworkBasicServer(55554, this.PlatsPretCheckBox);
-        
+
+//        try (
+//                FileInputStream fis = new FileInputStream("tables.data");
+//                ObjectInputStream ois = new ObjectInputStream(fis);) {
+//                Vector<Table> tableTmp = (Vector<Table>) ois.readObject();
+//                System.out.println(table);
+//        } catch (Exception e) {
+//            //e.printStackTrace();
+//}
     }
-    
+
     private void LoggedFrame() {
         
-        loggedFrame.setTitle("Restaurant \"Le gourmet audacieux\" : "+ serveur.getLogin());
+        loggedFrame.setTitle(prop.getProperty("nomResto") +" : "+ serveur.getLogin());
         
         if(!loggedFrame.isVisible()) {
             
@@ -190,12 +220,33 @@ public class ApplicationSalle extends javax.swing.JFrame {
         jScrollPane2 = new javax.swing.JScrollPane();
         platsAttente = new javax.swing.JList<>();
         envoyerBtn = new javax.swing.JButton();
-        jCheckBox1 = new javax.swing.JCheckBox();
+        CommandeEnvoyeeCheckBox = new javax.swing.JCheckBox();
         PlatsPretCheckBox = new javax.swing.JCheckBox();
-        jButton7 = new javax.swing.JButton();
+        lirePlatsDispoButton = new javax.swing.JButton();
         jLabel19 = new javax.swing.JLabel();
         placesLabel = new javax.swing.JLabel();
         couvertsLabel = new javax.swing.JLabel();
+        jMenuBar1 = new javax.swing.JMenuBar();
+        serveursMenu = new javax.swing.JMenu();
+        mdpMenuItem = new javax.swing.JMenuItem();
+        newServMenuItem = new javax.swing.JMenuItem();
+        tablesMenu = new javax.swing.JMenu();
+        listeTablesMenuItem = new javax.swing.JMenuItem();
+        nbClientsMenuItem = new javax.swing.JMenuItem();
+        sommeAddtionsMenuItem = new javax.swing.JMenuItem();
+        platsMenu = new javax.swing.JMenu();
+        listePlatsMenuItem = new javax.swing.JMenuItem();
+        listeDessertsMenuItem = new javax.swing.JMenuItem();
+        jSeparator = new javax.swing.JPopupMenu.Separator();
+        creerPlatMenuItem = new javax.swing.JMenuItem();
+        supprPlatMenuItem = new javax.swing.JMenuItem();
+        jMenu4 = new javax.swing.JMenu();
+        jMenuItem10 = new javax.swing.JMenuItem();
+        jMenuItem11 = new javax.swing.JMenuItem();
+        jMenu5 = new javax.swing.JMenu();
+        jMenuItem12 = new javax.swing.JMenuItem();
+        jSeparator3 = new javax.swing.JPopupMenu.Separator();
+        jMenuItem13 = new javax.swing.JMenuItem();
         encaisserFrame = new javax.swing.JFrame();
         jLabel20 = new javax.swing.JLabel();
         jLabel21 = new javax.swing.JLabel();
@@ -313,16 +364,134 @@ public class ApplicationSalle extends javax.swing.JFrame {
             }
         });
 
-        jCheckBox1.setEnabled(false);
-        jCheckBox1.setLabel("Commande envoyée");
+        CommandeEnvoyeeCheckBox.setEnabled(false);
+        CommandeEnvoyeeCheckBox.setLabel("Commande envoyée");
+        CommandeEnvoyeeCheckBox.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                CommandeEnvoyeeCheckBoxItemStateChanged(evt);
+            }
+        });
 
         PlatsPretCheckBox.setLabel("Plats prêts");
 
-        jButton7.setLabel("Lire plats disponibles");
+        lirePlatsDispoButton.setLabel("Lire plats disponibles");
+        lirePlatsDispoButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                lirePlatsDispoButtonMouseClicked(evt);
+            }
+        });
 
         placesLabel.setText("?");
 
         couvertsLabel.setText("??");
+
+        serveursMenu.setText("Serveurs");
+
+        mdpMenuItem.setText("Modifier mot de passe");
+        mdpMenuItem.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                mdpMenuItemMouseClicked(evt);
+            }
+        });
+        mdpMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mdpMenuItemActionPerformed(evt);
+            }
+        });
+        serveursMenu.add(mdpMenuItem);
+
+        newServMenuItem.setText("Ajouter un nouveau serveur");
+        newServMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                newServMenuItemActionPerformed(evt);
+            }
+        });
+        serveursMenu.add(newServMenuItem);
+
+        jMenuBar1.add(serveursMenu);
+
+        tablesMenu.setText("Tables");
+
+        listeTablesMenuItem.setText("Liste des tables");
+        tablesMenu.add(listeTablesMenuItem);
+
+        nbClientsMenuItem.setText("Nombre total clients");
+        tablesMenu.add(nbClientsMenuItem);
+
+        sommeAddtionsMenuItem.setText("Somme des additions");
+        tablesMenu.add(sommeAddtionsMenuItem);
+
+        jMenuBar1.add(tablesMenu);
+
+        platsMenu.setText("Plats");
+
+        listePlatsMenuItem.setText("Liste plats");
+        listePlatsMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                listePlatsMenuItemActionPerformed(evt);
+            }
+        });
+        platsMenu.add(listePlatsMenuItem);
+
+        listeDessertsMenuItem.setText("Liste desserts");
+        listeDessertsMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                listeDessertsMenuItemActionPerformed(evt);
+            }
+        });
+        platsMenu.add(listeDessertsMenuItem);
+        platsMenu.add(jSeparator);
+
+        creerPlatMenuItem.setText("Créer un plat");
+        creerPlatMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                creerPlatMenuItemActionPerformed(evt);
+            }
+        });
+        platsMenu.add(creerPlatMenuItem);
+
+        supprPlatMenuItem.setText("Supprimer un plat");
+        platsMenu.add(supprPlatMenuItem);
+
+        jMenuBar1.add(platsMenu);
+
+        jMenu4.setText("Paramètres");
+
+        jMenuItem10.setText("Infos système");
+        jMenuItem10.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem10ActionPerformed(evt);
+            }
+        });
+        jMenu4.add(jMenuItem10);
+
+        jMenuItem11.setText("Paramètres de date-heure");
+        jMenu4.add(jMenuItem11);
+
+        jMenuBar1.add(jMenu4);
+
+        jMenu5.setText("Aide");
+
+        jMenuItem12.setText("Pour débuter");
+        jMenuItem12.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem12ActionPerformed(evt);
+            }
+        });
+        jMenu5.add(jMenuItem12);
+        jMenu5.add(jSeparator3);
+
+        jMenuItem13.setText("A propos de ...");
+        jMenuItem13.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem13ActionPerformed(evt);
+            }
+        });
+        jMenu5.add(jMenuItem13);
+
+        jMenuBar1.add(jMenu5);
+
+        loggedFrame.setJMenuBar(jMenuBar1);
 
         javax.swing.GroupLayout loggedFrameLayout = new javax.swing.GroupLayout(loggedFrame.getContentPane());
         loggedFrame.getContentPane().setLayout(loggedFrameLayout);
@@ -371,11 +540,11 @@ public class ApplicationSalle extends javax.swing.JFrame {
                         .addGap(18, 18, 18)
                         .addComponent(jLabel19))
                     .addGroup(loggedFrameLayout.createSequentialGroup()
-                        .addComponent(jCheckBox1)
+                        .addComponent(CommandeEnvoyeeCheckBox)
                         .addGap(18, 18, 18)
                         .addComponent(PlatsPretCheckBox)
                         .addGap(47, 47, 47)
-                        .addComponent(jButton7))))
+                        .addComponent(lirePlatsDispoButton))))
             .addGroup(loggedFrameLayout.createSequentialGroup()
                 .addGap(63, 63, 63)
                 .addGroup(loggedFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -489,11 +658,11 @@ public class ApplicationSalle extends javax.swing.JFrame {
                         .addComponent(envoyerBtn))
                     .addComponent(jLabel19, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jScrollPane2))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 20, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(loggedFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jCheckBox1)
+                    .addComponent(CommandeEnvoyeeCheckBox)
                     .addComponent(PlatsPretCheckBox)
-                    .addComponent(jButton7))
+                    .addComponent(lirePlatsDispoButton))
                 .addContainerGap())
         );
 
@@ -690,6 +859,7 @@ public class ApplicationSalle extends javax.swing.JFrame {
         clock.start();
     }
     
+
     private void loginBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_loginBtnMouseClicked
             
         serveur = Serveur.authenticate(loginField.getText(), passwordField.getText());
@@ -855,6 +1025,19 @@ public class ApplicationSalle extends javax.swing.JFrame {
                 }
                 
                 if(nbCouverts > 0 && continuer == 0) { 
+
+                    try {
+                        FileOutputStream fos = new FileOutputStream("tables.data");
+                        ObjectOutputStream oos = new ObjectOutputStream(fos);
+
+                        oos.writeObject(table);
+                        oos.close();
+                    } catch (FileNotFoundException ex) {
+                        Logger.getLogger(ApplicationSalle.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (IOException ex) {
+                        Logger.getLogger(ApplicationSalle.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    
                     //get code
                     plat = new PlatPrincipal(platsBox.getSelectedItem().toString().split(":")[0]);
                     
@@ -868,6 +1051,8 @@ public class ApplicationSalle extends javax.swing.JFrame {
                     platsAttente.setModel(createListData(false));
                     
                     table.get(tableCourant).addition+=(plat.getPrix()*nbCouverts);
+                    
+                    
                 }else{
                     System.out.println("Commande annuler");
                 }
@@ -920,9 +1105,10 @@ public class ApplicationSalle extends javax.swing.JFrame {
         // pour le moment mettre tous les plats en mode servis
         for(CommandePlat item : table.get(tableCourant).plats){
  
-            platsEnvoi += tableCourantCode+'&'+item.toString()+';';
-            
             if(item.plat.servis == false){
+                
+                platsEnvoi += tableCourantCode+'&'+item.toString()+';';
+                
                 item.plat.servis = true;
             }
         }
@@ -932,8 +1118,28 @@ public class ApplicationSalle extends javax.swing.JFrame {
         
         System.out.println(table.get(tableCourant).addition);
         
-        //System.out.println(platsEnvoi);
-        nbc.sendString(platsEnvoi);
+        if(nbc == null)
+        {
+            nbc = new NetworkBasicClient("localhost", 55555);
+            // Attente le temps du lancement du client
+            try        
+            {
+                Thread.sleep(100);
+            } 
+            catch(InterruptedException ex) 
+            {
+                Thread.currentThread().interrupt();
+            }
+        }
+        try
+        {
+            nbc.sendStringWithoutWaiting(platsEnvoi);
+        }
+        catch(Exception e)
+        {
+            System.out.println("Erreur de l'envoi vers la cuisine, verifiez l'état du serveur de la cuisine!");
+        }
+            
     }//GEN-LAST:event_envoyerBtnMouseClicked
 
     private void boissonAddMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_boissonAddMouseClicked
@@ -979,6 +1185,179 @@ public class ApplicationSalle extends javax.swing.JFrame {
         
     }//GEN-LAST:event_encOkBtnMouseClicked
 
+    private void CommandeEnvoyeeCheckBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_CommandeEnvoyeeCheckBoxItemStateChanged
+        // TODO add your handling code here:
+        if(this.CommandeEnvoyeeCheckBox.isSelected())
+        {
+            JOptionPane.showMessageDialog(this,
+                "Commande reçue !", "Réponse de la cuisine", JOptionPane.INFORMATION_MESSAGE);
+            this.CommandeEnvoyeeCheckBox.setSelected(false);
+        }
+    }//GEN-LAST:event_CommandeEnvoyeeCheckBoxItemStateChanged
+
+    private void lirePlatsDispoButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lirePlatsDispoButtonMouseClicked
+        // TODO add your handling code here:
+        if(this.PlatsPretCheckBox.isSelected())
+        {
+            String[] str = nbsPlatsPrets.getMessage().split(";");
+
+            String msg = "";
+            
+            for(int i = 0; i < str.length; i++)
+            {
+                String[] commande = str[i].split(" ");
+                    
+                msg += commande[0] + " ";
+                
+                
+                
+                if(commande[1].contains("D_")){
+                    
+                    System.out.println(commande[1]);
+                    msg += ((Dessert)Dessert.plats.get(commande[1])).getLibelle();
+                }
+                    
+                    
+                else
+                    msg += ((PlatPrincipal)PlatPrincipal.plats.get(commande[1])).getLibelle();
+                
+                msg += " !\n";
+            }
+            
+            JOptionPane.showMessageDialog(this, msg, "Message de la cuisine", JOptionPane.INFORMATION_MESSAGE);
+        }
+    }//GEN-LAST:event_lirePlatsDispoButtonMouseClicked
+
+    private void jMenuItem10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem10ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jMenuItem10ActionPerformed
+
+    private void mdpMenuItemMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_mdpMenuItemMouseClicked
+        // TODO add your handling code here:
+        
+    }//GEN-LAST:event_mdpMenuItemMouseClicked
+
+    private void mdpMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mdpMenuItemActionPerformed
+        // TODO add your handling code here:
+
+        final JTextField userNameField = new JTextField(10);
+           
+        JPanel pane = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints(0, 0, 1, 1, 1.0, 1.0, 
+                GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 
+                new Insets(2, 2, 2, 2), 0, 0);
+        pane.add(new JLabel("Modification du mdp : "), gbc);
+
+        gbc.gridx = 1;
+        gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.EAST;
+        pane.add(userNameField, gbc);
+
+        int reply = JOptionPane.showConfirmDialog(this, pane, "Restaurant \"Le gourmet audacieux\"", 
+                JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+
+        if (reply == JOptionPane.OK_OPTION) {
+            // On continue avec 
+            String userName = userNameField.getText();
+            Props.setProperties(serveur.getLogin(), userName);
+        }
+    }//GEN-LAST:event_mdpMenuItemActionPerformed
+
+    private void newServMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newServMenuItemActionPerformed
+        // TODO add your handling code here:
+        final JTextField userNameField = new JTextField(10);
+        final JTextField pwdField = new JTextField(10);
+        
+        JPanel pane = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints(0, 0, 1, 1, 1.0, 1.0, 
+                GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 
+                new Insets(2, 2, 2, 2), 0, 0);
+        pane.add(new JLabel("Nom du serveur : "), gbc);
+        pane.add(new JLabel("Mot de passe : "), gbc);
+        gbc.gridx = 1;
+        gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.EAST;
+        pane.add(userNameField, gbc);
+        pane.add(pwdField, gbc);
+        
+        int reply = JOptionPane.showConfirmDialog(this, pane, "Restaurant \"Le gourmet audacieux\"", 
+                JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+
+        if (reply == JOptionPane.OK_OPTION) {
+            // On continue avec 
+            String userName = userNameField.getText();
+            String password = pwdField.getText();
+            XMLSerial.addServeur(userName, password);
+        }
+    }//GEN-LAST:event_newServMenuItemActionPerformed
+
+    private void jMenuItem13ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem13ActionPerformed
+        // TODO add your handling code here:
+        JOptionPane.showMessageDialog(this, "Cette application a été développée dans une ambiance joyeuse et studieuse. Le résultat devrait vous séduire..."
+                + "Daniel Garcia Lecloux et Alessandro Aloisio", "A propos de cette application", JOptionPane.INFORMATION_MESSAGE);
+    }//GEN-LAST:event_jMenuItem13ActionPerformed
+
+    private void jMenuItem12ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem12ActionPerformed
+        // TODO add your handling code here:
+        JOptionPane.showMessageDialog(this, "", "Pour débuter", JOptionPane.INFORMATION_MESSAGE);
+    }//GEN-LAST:event_jMenuItem12ActionPerformed
+
+    private void listePlatsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_listePlatsMenuItemActionPerformed
+        // TODO add your handling code here:
+        String str = new String();
+
+        PlatPrincipal[] listePlats = PlatPrincipal.plats.values().toArray(new PlatPrincipal[PlatPrincipal.plats.size()]);
+        for(int i=0; i<listePlats.length; i++)
+        {
+
+            str += listePlats[i].getLibelle() + " " + listePlats[i].prix + System.lineSeparator();
+            
+        }
+        JOptionPane.showMessageDialog(this, str, "Liste des plats", JOptionPane.INFORMATION_MESSAGE);
+    }//GEN-LAST:event_listePlatsMenuItemActionPerformed
+
+    private void listeDessertsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_listeDessertsMenuItemActionPerformed
+        // TODO add your handling code here:
+        String str = new String();
+
+        Dessert[] listePlats = Dessert.plats.values().toArray(new Dessert[Dessert.plats.size()]);
+        for(int i=0; i<listePlats.length; i++)
+        {
+
+            str += listePlats[i].getLibelle() + " " + listePlats[i].prix + System.lineSeparator();
+            
+        }
+        JOptionPane.showMessageDialog(this, str, "Liste des plats", JOptionPane.INFORMATION_MESSAGE);
+    }//GEN-LAST:event_listeDessertsMenuItemActionPerformed
+
+    private void creerPlatMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_creerPlatMenuItemActionPerformed
+        FileOutputStream fos = null;
+        
+        final JTextField codePlat = new JTextField(10);
+        final JTextField libellePlat = new JTextField(20);
+        final JTextField prixPlat = new JTextField(20);
+        
+        try {
+            // TODO add your handling code here:
+            String strAjout = new String();
+            strAjout += codePlat.getText() + " & " + libellePlat.getText() + " & " + prixPlat.getText();
+            fos = new FileOutputStream("plats.txt", true);
+            fos.write(strAjout.getBytes());
+            PlatPrincipal.plats.put(codePlat.getText(), new PlatPrincipal(libellePlat.getText(), Double.parseDouble(prixPlat.getText())));
+
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(ApplicationSalle.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(ApplicationSalle.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                fos.close();
+            } catch (IOException ex) {
+                Logger.getLogger(ApplicationSalle.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }//GEN-LAST:event_creerPlatMenuItemActionPerformed
+
     
     /**
      * @param args the command line arguments
@@ -1016,6 +1395,7 @@ public class ApplicationSalle extends javax.swing.JFrame {
     }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JCheckBox CommandeEnvoyeeCheckBox;
     private javax.swing.JCheckBox PlatsPretCheckBox;
     private javax.swing.JButton boissonAdd;
     private javax.swing.JTextField boissonAjout;
@@ -1023,6 +1403,7 @@ public class ApplicationSalle extends javax.swing.JFrame {
     private javax.swing.JButton btnPlats;
     private javax.swing.JButton cancelBtn;
     private javax.swing.JLabel couvertsLabel;
+    private javax.swing.JMenuItem creerPlatMenuItem;
     private javax.swing.JComboBox<String> dessertsBox;
     private javax.swing.JTextField encAddition;
     private javax.swing.JButton encAnnulerBtn;
@@ -1036,8 +1417,6 @@ public class ApplicationSalle extends javax.swing.JFrame {
     private javax.swing.JButton encaisserBtn;
     private javax.swing.JFrame encaisserFrame;
     private javax.swing.JButton envoyerBtn;
-    private javax.swing.JButton jButton7;
-    private javax.swing.JCheckBox jCheckBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
@@ -1060,21 +1439,42 @@ public class ApplicationSalle extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
+    private javax.swing.JMenu jMenu4;
+    private javax.swing.JMenu jMenu5;
+    private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JMenuItem jMenuItem10;
+    private javax.swing.JMenuItem jMenuItem11;
+    private javax.swing.JMenuItem jMenuItem12;
+    private javax.swing.JMenuItem jMenuItem13;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JPopupMenu.Separator jSeparator;
     private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JPopupMenu.Separator jSeparator3;
     private javax.swing.JTextField jTextField5;
+    private javax.swing.JButton lirePlatsDispoButton;
     private javax.swing.JList<String> listPlats;
+    private javax.swing.JMenuItem listeDessertsMenuItem;
+    private javax.swing.JMenuItem listePlatsMenuItem;
+    private javax.swing.JMenuItem listeTablesMenuItem;
     private javax.swing.JFrame loggedFrame;
     private javax.swing.JButton loginBtn;
     private javax.swing.JTextField loginField;
+    private javax.swing.JMenuItem mdpMenuItem;
+    private javax.swing.JMenuItem nbClientsMenuItem;
+    private javax.swing.JMenuItem newServMenuItem;
     private javax.swing.JPasswordField passwordField;
     private javax.swing.JLabel placesLabel;
     private javax.swing.JList<String> platsAttente;
     private javax.swing.JComboBox<String> platsBox;
+    private javax.swing.JMenu platsMenu;
     private javax.swing.JTextField qttDessert;
     private javax.swing.JTextField qttPlat;
+    private javax.swing.JMenu serveursMenu;
+    private javax.swing.JMenuItem sommeAddtionsMenuItem;
+    private javax.swing.JMenuItem supprPlatMenuItem;
     private javax.swing.JComboBox<String> tableBox;
+    private javax.swing.JMenu tablesMenu;
     // End of variables declaration//GEN-END:variables
 
 }

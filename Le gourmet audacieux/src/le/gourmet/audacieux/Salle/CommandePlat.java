@@ -5,11 +5,13 @@
  */
 package le.gourmet.audacieux.Salle;
 
+import java.io.Serializable;
+
 /**
  *
  * @author Alessandro Aloisio
  */
-public class CommandePlat {
+public class CommandePlat implements Serializable {
     
     public Plat plat;
     public int quantite;

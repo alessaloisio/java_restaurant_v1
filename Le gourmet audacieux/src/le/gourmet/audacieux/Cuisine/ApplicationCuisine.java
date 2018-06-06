@@ -5,24 +5,34 @@
  */
 package le.gourmet.audacieux.Cuisine;
 
+import Properties.Props;
 import network.*;
 import StringSlicer.*;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.LinkedHashSet;
+import java.util.Properties;
+import java.util.Vector;
+import javax.swing.DefaultCellEditor;
+import javax.swing.JCheckBox;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
 /**
  *
  * @author Alessandro Aloisio
  */
 public class ApplicationCuisine extends javax.swing.JFrame {
 
+    DefaultTableModel model = new DefaultTableModel();
     NetworkBasicServer nbs;
-    NetworkBasicClient nbc;
-    StringSlicer ss;
-    DefaultTableModel model;
-
+    NetworkBasicClient nbc, nbcPlatPret;
+    DefaultTableModel modeljTablePrepa;
+    Properties prop;
     /**
      * Creates new form ApplicationCuisine
      */
@@ -32,10 +42,49 @@ public class ApplicationCuisine extends javax.swing.JFrame {
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setSize(485, 450);
         
-        nbs = new NetworkBasicServer(55555, this.CmdRecueCheckBox);
-        DefaultTableModel model = new DefaultTableModel();
+        prop = Props.getProperties();
+        
+        nbs = new NetworkBasicServer(Integer.parseInt(prop.getProperty("portServ1")), this.CmdRecueCheckBox);
 
-        //nbc = new NetworkBasicClient("localhost", 55554);
+        this.jTableCommande.setEnabled(false);
+        this.modeljTablePrepa = new DefaultTableModel(){
+            private static final long serialVersionUID = 1L;  
+            @Override
+            public Class<?> getColumnClass(int column) {  
+                    switch (column) {  
+                        case 0:
+                            return String.class;
+                        case 1:
+                            return String.class;
+                        case 2:
+                            return String.class;
+                        case 3:
+                            return String.class; 
+                        case 4:
+                            return Boolean.class;   
+                        case 5:
+                            return Boolean.class;
+                        case 6:
+                            return Boolean.class;
+                        default:
+                            return Boolean.class;
+                    }  
+            }
+            public boolean isCellEditable(int row, int column)
+            {
+                if(column < 4)
+                    return false;//This causes all cells to be not editable
+                
+                return true;
+            }
+        };
+        modeljTablePrepa.addColumn("Quantité");
+        modeljTablePrepa.addColumn("Plat");
+        modeljTablePrepa.addColumn("Table");
+        modeljTablePrepa.addColumn("Heure arrivée");
+        modeljTablePrepa.addColumn("En préparation");
+        modeljTablePrepa.addColumn("A enlever");
+        modeljTablePrepa.addColumn("Enlevé");
     }
 
     /**
@@ -48,13 +97,13 @@ public class ApplicationCuisine extends javax.swing.JFrame {
     private void initComponents() {
 
         showCommande = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        commandeRecueButton = new javax.swing.JButton();
         CmdRecueCheckBox = new javax.swing.JCheckBox();
         jLabel1 = new javax.swing.JLabel();
         jSeparator1 = new javax.swing.JSeparator();
         jLabel2 = new javax.swing.JLabel();
         jLabelCommande = new javax.swing.JLabel();
-        jToggleButton1 = new javax.swing.JToggleButton();
+        platEnleverButton = new javax.swing.JToggleButton();
         jScrollPane3 = new javax.swing.JScrollPane();
         jTablePrep = new javax.swing.JTable();
         jScrollPane4 = new javax.swing.JScrollPane();
@@ -69,10 +118,10 @@ public class ApplicationCuisine extends javax.swing.JFrame {
             }
         });
 
-        jButton2.setText("Commande reçue !");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+        commandeRecueButton.setText("Commande reçue !");
+        commandeRecueButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                commandeRecueButtonMouseClicked(evt);
             }
         });
 
@@ -84,7 +133,12 @@ public class ApplicationCuisine extends javax.swing.JFrame {
 
         jLabelCommande.setText(">>");
 
-        jToggleButton1.setText("Prévenir plats à enlever");
+        platEnleverButton.setText("Prévenir plats à enlever");
+        platEnleverButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                platEnleverButtonMouseClicked(evt);
+            }
+        });
 
         jTablePrep.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -122,11 +176,11 @@ public class ApplicationCuisine extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel1)
                         .addGap(122, 122, 122)
-                        .addComponent(jButton2))
+                        .addComponent(commandeRecueButton))
                     .addComponent(jLabelCommande)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(31, 31, 31)
-                        .addComponent(jToggleButton1))
+                        .addComponent(platEnleverButton))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(CmdRecueCheckBox)
                         .addGap(44, 44, 44)
@@ -149,7 +203,7 @@ public class ApplicationCuisine extends javax.swing.JFrame {
                 .addGap(11, 11, 11)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
-                    .addComponent(jButton2))
+                    .addComponent(commandeRecueButton))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
@@ -159,26 +213,23 @@ public class ApplicationCuisine extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 131, Short.MAX_VALUE)
                 .addGap(18, 18, 18)
-                .addComponent(jToggleButton1)
+                .addComponent(platEnleverButton)
                 .addGap(18, 18, 18))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton2ActionPerformed
-
+    
     private void showCommandeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_showCommandeMouseClicked
         // TODO add your handling code here:
         String[] donneesCommande = new String[4];
         String msg = new String();
         msg = nbs.getMessage();
-
+        
         this.jLabelCommande.setText(">> " + msg);
         
-        ss = new StringSlicer(msg, ";");
+        StringSlicer ss = new StringSlicer(msg, ";");
         ss.getComponents(true);
         
         DefaultTableModel model = new DefaultTableModel();
@@ -188,7 +239,6 @@ public class ApplicationCuisine extends javax.swing.JFrame {
         model.addColumn("Heure");
         LinkedHashSet<String> hashSet = ss.listUniqueComponents();
 
-        
         for(String s: hashSet)
         {
             String[] tmp = s.split("&");
@@ -205,13 +255,84 @@ public class ApplicationCuisine extends javax.swing.JFrame {
             String current_time_str = time_formatter.format(System.currentTimeMillis());
             
             //System.out.println(donneesCommande[0] + donneesCommande[1] + donneesCommande[2] + donneesCommande[3]);
-            
             model.addRow(new Object[] { donneesCommande[1] , donneesCommande[2] , donneesCommande[0], current_time_str });
-            
+            modeljTablePrepa.addRow(new Object[] { donneesCommande[1] , donneesCommande[2] , donneesCommande[0], current_time_str.split(" ")[1], false, false, false });
         }
 
         this.jTableCommande.setModel(model);
+        this.jTablePrep.setModel(modeljTablePrepa);
+        
     }//GEN-LAST:event_showCommandeMouseClicked
+
+    private void commandeRecueButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_commandeRecueButtonMouseClicked
+        // TODO add your handling code here:
+        
+        for(int i=0; i<jTablePrep.getRowCount(); i++)
+        {
+            if ((Boolean)jTablePrep.getValueAt(i, 4) == true)
+            {
+                if(nbc == null)
+                {
+                    nbc = new NetworkBasicClient("localhost", 55554);
+
+                    // Attente le temps du lancement du client
+                    try        
+                    {
+                        Thread.sleep(100);
+                    } 
+                    catch(InterruptedException ex) 
+                    {
+                        Thread.currentThread().interrupt();
+                    }
+                }
+                // Envoi etat commandeRecue vers la salle
+                try
+                {
+                    nbc.sendStringWithoutWaiting("");
+                }
+                catch(Exception e)
+                {
+                    System.out.println("Erreur de l'envoi vers la salle, verifiez l'état du serveur de la salle!");
+                }
+                i = jTablePrep.getRowCount();
+            }
+        }
+    }//GEN-LAST:event_commandeRecueButtonMouseClicked
+
+    private void platEnleverButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_platEnleverButtonMouseClicked
+        // TODO add your handling code here:
+        String str = new String();
+        for(int i=0; i<jTablePrep.getRowCount(); i++)
+        {
+            if ((Boolean)jTablePrep.getValueAt(i, 5) == true && (Boolean)jTablePrep.getValueAt(i, 6) == false)
+            {
+                str += (String)jTablePrep.getValueAt(i, 0) + " " + (String)jTablePrep.getValueAt(i, 1) + ";";
+            }
+        }
+        if(nbcPlatPret == null)
+        {
+            nbcPlatPret = new NetworkBasicClient("localhost", 55553);
+
+            // Attente le temps du lancement du client
+            try        
+            {
+                Thread.sleep(100);
+            } 
+            catch(InterruptedException ex) 
+            {
+                Thread.currentThread().interrupt();
+            }
+        }
+        // Envoi etat commandeRecue vers la salle
+        try
+        {
+            nbcPlatPret.sendStringWithoutWaiting(str);
+        }
+        catch(Exception e)
+        {
+            System.out.println("Erreur de l'envoi vers la salle, verifiez l'état du serveur de la salle!");
+        }
+    }//GEN-LAST:event_platEnleverButtonMouseClicked
 
     /**
      * @param args the command line arguments
@@ -250,7 +371,7 @@ public class ApplicationCuisine extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JCheckBox CmdRecueCheckBox;
-    private javax.swing.JButton jButton2;
+    private javax.swing.JButton commandeRecueButton;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabelCommande;
@@ -259,7 +380,7 @@ public class ApplicationCuisine extends javax.swing.JFrame {
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JTable jTableCommande;
     private javax.swing.JTable jTablePrep;
-    private javax.swing.JToggleButton jToggleButton1;
+    private javax.swing.JToggleButton platEnleverButton;
     private javax.swing.JButton showCommande;
     // End of variables declaration//GEN-END:variables
 }
