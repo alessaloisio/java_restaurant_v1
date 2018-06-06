@@ -3,19 +3,14 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/D:/Google%20Drive/Ecole/2017-2018/INPRES%202e%20INDUS/Réseau/java_restaurant_v1/Le%20gourmet%20audacieux/src/Properties/Props.java</file>
-            <file>file:/D:/Google%20Drive/Ecole/2017-2018/INPRES%202e%20INDUS/Réseau/java_restaurant_v1/Le%20gourmet%20audacieux/src/Properties/XMLSerial.java</file>
-            <file>file:/D:/Google%20Drive/Ecole/2017-2018/INPRES%202e%20INDUS/Réseau/java_restaurant_v1/Le%20gourmet%20audacieux/src/le/gourmet/audacieux/Salle/Table.java</file>
-            <file>file:/D:/Google%20Drive/Ecole/2017-2018/INPRES%202e%20INDUS/Réseau/java_restaurant_v1/Le%20gourmet%20audacieux/src/le/gourmet/audacieux/Salle/ApplicationSalle.java</file>
-            <file>file:/D:/Google%20Drive/Ecole/2017-2018/INPRES%202e%20INDUS/Réseau/java_restaurant_v1/Le%20gourmet%20audacieux/src/le/gourmet/audacieux/Salle/Dessert.java</file>
-            <file>file:/D:/Google%20Drive/Ecole/2017-2018/INPRES%202e%20INDUS/Réseau/java_restaurant_v1/Le%20gourmet%20audacieux/src/le/gourmet/audacieux/Salle/PlatPrincipal.java</file>
-            <file>file:/D:/Google%20Drive/Ecole/2017-2018/INPRES%202e%20INDUS/Réseau/java_restaurant_v1/Le%20gourmet%20audacieux/src/le/gourmet/audacieux/Salle/CommandePlat.java</file>
-            <file>file:/D:/Google%20Drive/Ecole/2017-2018/INPRES%202e%20INDUS/Réseau/java_restaurant_v1/Le%20gourmet%20audacieux/src/le/gourmet/audacieux/lib/serveurs.xml</file>
-            <file>file:/D:/Google%20Drive/Ecole/2017-2018/INPRES%202e%20INDUS/Réseau/java_restaurant_v1/Le%20gourmet%20audacieux/src/le/gourmet/audacieux/Salle/Plat.java</file>
-            <file>file:/D:/Google%20Drive/Ecole/2017-2018/INPRES%202e%20INDUS/Réseau/java_restaurant_v1/Le%20gourmet%20audacieux/src/le/gourmet/audacieux/Salle/Serveur.java</file>
-            <file>file:/D:/Google%20Drive/Ecole/2017-2018/INPRES%202e%20INDUS/Réseau/java_restaurant_v1/Le%20gourmet%20audacieux/src/le/gourmet/audacieux/Salle/Boisson.java</file>
-            <file>file:/D:/Google%20Drive/Ecole/2017-2018/INPRES%202e%20INDUS/Réseau/java_restaurant_v1/Le%20gourmet%20audacieux/src/le/gourmet/audacieux/Cuisine/ApplicationCuisine.java</file>
-            <file>file:/D:/Google%20Drive/Ecole/2017-2018/INPRES%202e%20INDUS/Réseau/java_restaurant_v1/Le%20gourmet%20audacieux/src/le/gourmet/audacieux/Salle/CategoriePlat.java</file>
+            <file>file:/C:/Users/Alessandro%20Aloisio/Desktop/java_restaurant_v1-master/java_restaurant_v1-master/Le%20gourmet%20audacieux/src/le/gourmet/audacieux/Cuisine/ApplicationCuisine.java</file>
+            <file>file:/C:/Users/Alessandro%20Aloisio/Desktop/java_restaurant_v1-master/java_restaurant_v1-master/Le%20gourmet%20audacieux/src/le/gourmet/audacieux/Salle/CommandePlat.java</file>
+            <file>file:/C:/Users/Alessandro%20Aloisio/Desktop/java_restaurant_v1-master/java_restaurant_v1-master/Le%20gourmet%20audacieux/src/le/gourmet/audacieux/Salle/Table.java</file>
+            <file>file:/C:/Users/Alessandro%20Aloisio/Desktop/java_restaurant_v1-master/java_restaurant_v1-master/Le%20gourmet%20audacieux/src/le/gourmet/audacieux/lib/serveurs.xml</file>
+            <file>file:/C:/Users/Alessandro%20Aloisio/Desktop/java_restaurant_v1-master/java_restaurant_v1-master/Le%20gourmet%20audacieux/src/le/gourmet/audacieux/Salle/ApplicationSalle.java</file>
+            <file>file:/C:/Users/Alessandro%20Aloisio/Desktop/java_restaurant_v1-master/java_restaurant_v1-master/Le%20gourmet%20audacieux/src/le/gourmet/audacieux/Salle/PlatPrincipal.java</file>
+            <file>file:/C:/Users/Alessandro%20Aloisio/Desktop/java_restaurant_v1-master/java_restaurant_v1-master/Le%20gourmet%20audacieux/src/le/gourmet/audacieux/Salle/Serveur.java</file>
+            <file>file:/C:/Users/Alessandro%20Aloisio/Desktop/java_restaurant_v1-master/java_restaurant_v1-master/Le%20gourmet%20audacieux/src/Properties/Props.java</file>
         </group>
     </open-files>
 </project-private>

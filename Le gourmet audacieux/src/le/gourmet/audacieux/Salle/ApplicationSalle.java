@@ -22,10 +22,14 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.MouseEvent;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
@@ -75,6 +79,8 @@ public class ApplicationSalle extends javax.swing.JFrame {
     private NetworkBasicServer nbs, nbsPlatsPrets;
     private NetworkBasicClient nbc;
     
+    private boolean impression = false;
+    
     Properties prop;
     
     /**
@@ -90,6 +96,7 @@ public class ApplicationSalle extends javax.swing.JFrame {
         initComponents();
         
         clock();
+        
 //        Props.setProperties("portServ1", "55555");
 //        Props.setProperties("portServ2", "55554");
 //        Props.setProperties("portServ3", "55553");
@@ -260,6 +267,8 @@ public class ApplicationSalle extends javax.swing.JFrame {
         encOkBtn = new javax.swing.JButton();
         encAnnulerBtn = new javax.swing.JButton();
         encRadioGroup = new javax.swing.ButtonGroup();
+        imprimFrame = new javax.swing.JFrame();
+        jLabel23 = new javax.swing.JLabel();
         loginField = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
         passwordField = new javax.swing.JPasswordField();
@@ -293,6 +302,12 @@ public class ApplicationSalle extends javax.swing.JFrame {
             public String getElementAt(int i) { return strings[i]; }
         });
         jScrollPane1.setViewportView(listPlats);
+
+        platsBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                platsBoxActionPerformed(evt);
+            }
+        });
 
         btnPlats.setText("Commander plats");
         btnPlats.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -388,11 +403,6 @@ public class ApplicationSalle extends javax.swing.JFrame {
         serveursMenu.setText("Serveurs");
 
         mdpMenuItem.setText("Modifier mot de passe");
-        mdpMenuItem.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                mdpMenuItemMouseClicked(evt);
-            }
-        });
         mdpMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 mdpMenuItemActionPerformed(evt);
@@ -413,12 +423,27 @@ public class ApplicationSalle extends javax.swing.JFrame {
         tablesMenu.setText("Tables");
 
         listeTablesMenuItem.setText("Liste des tables");
+        listeTablesMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                listeTablesMenuItemActionPerformed(evt);
+            }
+        });
         tablesMenu.add(listeTablesMenuItem);
 
         nbClientsMenuItem.setText("Nombre total clients");
+        nbClientsMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                nbClientsMenuItemActionPerformed(evt);
+            }
+        });
         tablesMenu.add(nbClientsMenuItem);
 
         sommeAddtionsMenuItem.setText("Somme des additions");
+        sommeAddtionsMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                sommeAddtionsMenuItemActionPerformed(evt);
+            }
+        });
         tablesMenu.add(sommeAddtionsMenuItem);
 
         jMenuBar1.add(tablesMenu);
@@ -451,6 +476,11 @@ public class ApplicationSalle extends javax.swing.JFrame {
         platsMenu.add(creerPlatMenuItem);
 
         supprPlatMenuItem.setText("Supprimer un plat");
+        supprPlatMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                supprPlatMenuItemActionPerformed(evt);
+            }
+        });
         platsMenu.add(supprPlatMenuItem);
 
         jMenuBar1.add(platsMenu);
@@ -466,6 +496,11 @@ public class ApplicationSalle extends javax.swing.JFrame {
         jMenu4.add(jMenuItem10);
 
         jMenuItem11.setText("Paramètres de date-heure");
+        jMenuItem11.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem11ActionPerformed(evt);
+            }
+        });
         jMenu4.add(jMenuItem11);
 
         jMenuBar1.add(jMenu4);
@@ -767,6 +802,25 @@ public class ApplicationSalle extends javax.swing.JFrame {
                 .addGap(53, 53, 53))
         );
 
+        jLabel23.setText("Impression en cours ....");
+
+        javax.swing.GroupLayout imprimFrameLayout = new javax.swing.GroupLayout(imprimFrame.getContentPane());
+        imprimFrame.getContentPane().setLayout(imprimFrameLayout);
+        imprimFrameLayout.setHorizontalGroup(
+            imprimFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(imprimFrameLayout.createSequentialGroup()
+                .addGap(136, 136, 136)
+                .addComponent(jLabel23)
+                .addContainerGap(149, Short.MAX_VALUE))
+        );
+        imprimFrameLayout.setVerticalGroup(
+            imprimFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(imprimFrameLayout.createSequentialGroup()
+                .addGap(111, 111, 111)
+                .addComponent(jLabel23)
+                .addContainerGap(175, Short.MAX_VALUE))
+        );
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jLabel1.setText("Serveur ?");
@@ -850,6 +904,31 @@ public class ApplicationSalle extends javax.swing.JFrame {
 
                         sleep(1000);
                     }
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(ApplicationSalle.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        };
+        
+        clock.start();
+    }
+    
+    public void imprimer(){
+        
+        Thread clock = new Thread()
+        {
+            public void run()
+            {
+                try {
+                    
+                    imprimFrame.setSize(950, 746);
+                    imprimFrame.setVisible(true);     
+                    impression = true;
+                    sleep(1000*10);
+                    impression = false;
+                    imprimFrame.setVisible(false); 
+
+                    
                 } catch (InterruptedException ex) {
                     Logger.getLogger(ApplicationSalle.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -1178,6 +1257,8 @@ public class ApplicationSalle extends javax.swing.JFrame {
         if(encRadioConsulter.isSelected()){
             System.out.println("Consulter");
         }else if(encRadioImprimer.isSelected()){
+            imprimer();
+  
             System.out.println("Imprimer");
         }else if(encRadioEncaisser.isSelected()){
             System.out.println("Encaisser");
@@ -1186,7 +1267,7 @@ public class ApplicationSalle extends javax.swing.JFrame {
     }//GEN-LAST:event_encOkBtnMouseClicked
 
     private void CommandeEnvoyeeCheckBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_CommandeEnvoyeeCheckBoxItemStateChanged
-        // TODO add your handling code here:
+        // quand la commande est recu par le cuisto
         if(this.CommandeEnvoyeeCheckBox.isSelected())
         {
             JOptionPane.showMessageDialog(this,
@@ -1209,15 +1290,8 @@ public class ApplicationSalle extends javax.swing.JFrame {
                     
                 msg += commande[0] + " ";
                 
-                
-                
-                if(commande[1].contains("D_")){
-                    
-                    System.out.println(commande[1]);
-                    msg += ((Dessert)Dessert.plats.get(commande[1])).getLibelle();
-                }
-                    
-                    
+                if(commande[1].contains("D_"))
+                    msg += ((Dessert)Dessert.plats.get(commande[1])).getLibelle();  
                 else
                     msg += ((PlatPrincipal)PlatPrincipal.plats.get(commande[1])).getLibelle();
                 
@@ -1230,12 +1304,9 @@ public class ApplicationSalle extends javax.swing.JFrame {
 
     private void jMenuItem10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem10ActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jMenuItem10ActionPerformed
-
-    private void mdpMenuItemMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_mdpMenuItemMouseClicked
-        // TODO add your handling code here:
+        JOptionPane.showMessageDialog(this, "OS nom : "+System.getProperty("os.name")+ System.lineSeparator()+ "Current dir : "+System.getProperty("user.dir")+ System.lineSeparator(), "A propos de cette application", JOptionPane.INFORMATION_MESSAGE);
         
-    }//GEN-LAST:event_mdpMenuItemMouseClicked
+    }//GEN-LAST:event_jMenuItem10ActionPerformed
 
     private void mdpMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mdpMenuItemActionPerformed
         // TODO add your handling code here:
@@ -1270,14 +1341,22 @@ public class ApplicationSalle extends javax.swing.JFrame {
         
         JPanel pane = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints(0, 0, 1, 1, 1.0, 1.0, 
-                GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 
-                new Insets(2, 2, 2, 2), 0, 0);
+                        GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 
+                        new Insets(2, 2, 2, 2), 0, 0);
+        
+        
         pane.add(new JLabel("Nom du serveur : "), gbc);
-        pane.add(new JLabel("Mot de passe : "), gbc);
         gbc.gridx = 1;
         gbc.gridy = 0;
         gbc.anchor = GridBagConstraints.EAST;
         pane.add(userNameField, gbc);
+        
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        
+        pane.add(new JLabel("Mot de passe : "), gbc);
+        gbc.gridx = 1;
+        gbc.anchor = GridBagConstraints.EAST;
         pane.add(pwdField, gbc);
         
         int reply = JOptionPane.showConfirmDialog(this, pane, "Restaurant \"Le gourmet audacieux\"", 
@@ -1337,26 +1416,178 @@ public class ApplicationSalle extends javax.swing.JFrame {
         final JTextField libellePlat = new JTextField(20);
         final JTextField prixPlat = new JTextField(20);
         
-        try {
-            // TODO add your handling code here:
-            String strAjout = new String();
-            strAjout += codePlat.getText() + " & " + libellePlat.getText() + " & " + prixPlat.getText();
-            fos = new FileOutputStream("plats.txt", true);
-            fos.write(strAjout.getBytes());
-            PlatPrincipal.plats.put(codePlat.getText(), new PlatPrincipal(libellePlat.getText(), Double.parseDouble(prixPlat.getText())));
+        JPanel pane = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints(0, 0, 1, 1, 1.0, 1.0, 
+                        GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 
+                        new Insets(2, 2, 2, 2), 0, 0);
+        
+        
+        pane.add(new JLabel("Code : "), gbc);
+        gbc.gridx = 1;
+        gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.EAST;
+        pane.add(codePlat, gbc);
+        
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        
+        pane.add(new JLabel("Libelle : "), gbc);
+        gbc.gridx = 1;
+        gbc.anchor = GridBagConstraints.EAST;
+        pane.add(libellePlat, gbc);
+        
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        
+        pane.add(new JLabel("Prix : "), gbc);
+        gbc.gridx = 1;
+        gbc.anchor = GridBagConstraints.EAST;
+        pane.add(prixPlat, gbc);
+        
+        int reply = JOptionPane.showConfirmDialog(this, pane, "Restaurant \"Le gourmet audacieux\"", 
+                JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(ApplicationSalle.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(ApplicationSalle.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
+        if (reply == JOptionPane.OK_OPTION) {  
             try {
-                fos.close();
+                // TODO add your handling code here:
+                String strAjout = new String();
+                strAjout += codePlat.getText() + " & " + libellePlat.getText() + " & " + prixPlat.getText() + System.lineSeparator();
+                fos = new FileOutputStream("plats.txt", true);
+                fos.write(strAjout.getBytes());
+                PlatPrincipal.plats.put(codePlat.getText(), new PlatPrincipal(libellePlat.getText(), Double.parseDouble(prixPlat.getText())));
+
+                Set<String> keys = PlatPrincipal.plats.keySet();
+                platsBox.removeAllItems();
+                keys.forEach((key) -> {
+                    platsBox.addItem(key + ": " + PlatPrincipal.plats.get(key));
+                });
+                // 
+                
+                
+            } catch (FileNotFoundException ex) {
+                Logger.getLogger(ApplicationSalle.class.getName()).log(Level.SEVERE, null, ex);
             } catch (IOException ex) {
                 Logger.getLogger(ApplicationSalle.class.getName()).log(Level.SEVERE, null, ex);
+            } finally {
+                try {
+                    fos.close();
+                } catch (IOException ex) {
+                    Logger.getLogger(ApplicationSalle.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         }
     }//GEN-LAST:event_creerPlatMenuItemActionPerformed
+
+    private void listeTablesMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_listeTablesMenuItemActionPerformed
+        // TODO add your handling code here:
+        String str = new String();
+
+        for(int i=0; i<table.size();i++)
+        {
+            str += "Num table : " + table.elementAt(i).numTable + ", Serveur : " + table.elementAt(i).idServeur +System.lineSeparator();
+        }
+        
+        JOptionPane.showMessageDialog(this, str, "Liste des tables", JOptionPane.INFORMATION_MESSAGE);
+    }//GEN-LAST:event_listeTablesMenuItemActionPerformed
+
+    private void nbClientsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nbClientsMenuItemActionPerformed
+        
+        String str = new String();
+        int nbClients = 0;
+        
+        for(int i=0; i<table.size();i++)
+        {
+            for(int j = 0;j<table.elementAt(i).plats.size();j++){
+                nbClients += table.elementAt(i).plats.elementAt(j).quantite;
+            }
+        }
+        
+        str += "Il y a environ " + nbClients + " clients.";
+        
+        JOptionPane.showMessageDialog(this, str, "Nb clients", JOptionPane.INFORMATION_MESSAGE);
+    }//GEN-LAST:event_nbClientsMenuItemActionPerformed
+
+    private void sommeAddtionsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sommeAddtionsMenuItemActionPerformed
+        // TODO add your handling code here:
+        String str = new String();
+        double additionTotal = 0;
+        
+        for(int i=0; i<table.size();i++)
+        {
+            additionTotal += table.elementAt(i).addition;
+        }
+        
+        str += "L'addition total s'élève à "+additionTotal;
+        
+        JOptionPane.showMessageDialog(this, str, "Additions", JOptionPane.INFORMATION_MESSAGE);
+    }//GEN-LAST:event_sommeAddtionsMenuItemActionPerformed
+
+    private void supprPlatMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_supprPlatMenuItemActionPerformed
+        
+        
+        final JTextField code = new JTextField(10);
+           
+        JPanel pane = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints(0, 0, 1, 1, 1.0, 1.0, 
+                GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 
+                new Insets(2, 2, 2, 2), 0, 0);
+        pane.add(new JLabel("Code du plat : "), gbc);
+
+        gbc.gridx = 1;
+        gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.EAST;
+        pane.add(code, gbc);
+
+        int reply = JOptionPane.showConfirmDialog(this, pane, "Suppression plat", 
+                JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+
+        if (reply == JOptionPane.OK_OPTION) {
+            // On continue avec 
+        
+            FileWriter fileWritter = null;
+            try {
+                // TODO add your handling code here:
+
+                String oldContent = "";
+                BufferedReader reader = new BufferedReader(new FileReader("plats.txt"));
+                String line = reader.readLine();
+                while (line != null)
+                {
+                    System.out.println(code.getText());
+                    if(!line.contains(code.getText()))
+                    {
+                        oldContent = oldContent + line + System.lineSeparator();
+                        
+                        
+                    }
+                    line = reader.readLine();
+                }  
+                System.out.println(oldContent);
+                
+                fileWritter = new FileWriter("plats.txt");
+                BufferedWriter bufferWritter = new BufferedWriter(fileWritter);
+                bufferWritter.write(oldContent);
+                reader.close();
+                bufferWritter.close();
+            } catch (IOException ex) {
+                Logger.getLogger(ApplicationSalle.class.getName()).log(Level.SEVERE, null, ex);
+            } finally {
+                try {
+                    fileWritter.close();
+                } catch (IOException ex) {
+                    Logger.getLogger(ApplicationSalle.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+    }//GEN-LAST:event_supprPlatMenuItemActionPerformed
+
+    private void jMenuItem11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem11ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jMenuItem11ActionPerformed
+
+    private void platsBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_platsBoxActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_platsBoxActionPerformed
 
     
     /**
@@ -1417,6 +1648,7 @@ public class ApplicationSalle extends javax.swing.JFrame {
     private javax.swing.JButton encaisserBtn;
     private javax.swing.JFrame encaisserFrame;
     private javax.swing.JButton envoyerBtn;
+    private javax.swing.JFrame imprimFrame;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
@@ -1432,6 +1664,7 @@ public class ApplicationSalle extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel20;
     private javax.swing.JLabel jLabel21;
     private javax.swing.JLabel jLabel22;
+    private javax.swing.JLabel jLabel23;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
