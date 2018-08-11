@@ -30,6 +30,7 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
+import le.gourmet.audacieux.CuisineBeans.GetRecipeBean;
 /**
  *
  * @author Alessandro Aloisio
@@ -97,7 +98,20 @@ public class ApplicationCuisine extends javax.swing.JFrame {
             {
                 //Serialisation changement d'etat checkbox
                 if(e.getColumn() >= 4)
+                {
+                    if(e.getColumn() == 4)
+                    {
+                        System.out.println(modeljTablePrepa.getValueAt(e.getLastRow(), 2));
+                        System.out.println(modeljTablePrepa.getValueAt(e.getLastRow(), 4));
+                        
+                        //if((Boolean) modeljTablePrepa.getValueAt(e.getLastRow(), 4) == true)
+                            //GetRecipeBean recipe = new GetRecipeBean("CC");
+                        
+                    }
+                 
                     serializeModelObject();
+                }
+
             }
         });
         modeljTablePrepa.addColumn("Quantité");
