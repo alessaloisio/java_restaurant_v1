@@ -5,11 +5,13 @@
  */
 package le.gourmet.audacieux.Salle;
 
+import java.io.Serializable;
+
 /**
  *
  * @author Alessandro Aloisio
  */
-public abstract class Plat extends CategoriePlat implements Service {
+public abstract class Plat extends CategoriePlat implements Service, Serializable {
     
     
     protected double prix;

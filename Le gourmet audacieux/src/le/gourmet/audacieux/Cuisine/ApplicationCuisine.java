@@ -9,17 +9,25 @@ import Properties.Props;
 import network.*;
 import StringSlicer.*;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.LinkedHashSet;
 import java.util.Properties;
 import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 /**
@@ -28,10 +36,13 @@ import javax.swing.table.TableColumn;
  */
 public class ApplicationCuisine extends javax.swing.JFrame {
 
-    DefaultTableModel model = new DefaultTableModel();
+    
     NetworkBasicServer nbs;
     NetworkBasicClient nbc, nbcPlatPret;
+    
     DefaultTableModel modeljTablePrepa;
+    DefaultTableModel modelCommande = new DefaultTableModel();
+    
     Properties prop;
     /**
      * Creates new form ApplicationCuisine
@@ -50,7 +61,7 @@ public class ApplicationCuisine extends javax.swing.JFrame {
         this.modeljTablePrepa = new DefaultTableModel(){
             private static final long serialVersionUID = 1L;  
             @Override
-            public Class<?> getColumnClass(int column) {  
+            public Class<?> getColumnClass(int column) {
                     switch (column) {  
                         case 0:
                             return String.class;
@@ -77,7 +88,18 @@ public class ApplicationCuisine extends javax.swing.JFrame {
                 
                 return true;
             }
+            
         };
+        
+        modeljTablePrepa.addTableModelListener(new TableModelListener() 
+        {
+            public void tableChanged(TableModelEvent e) 
+            {
+                //Serialisation changement d'etat checkbox
+                if(e.getColumn() >= 4)
+                    serializeModelObject();
+            }
+        });
         modeljTablePrepa.addColumn("Quantité");
         modeljTablePrepa.addColumn("Plat");
         modeljTablePrepa.addColumn("Table");
@@ -85,6 +107,13 @@ public class ApplicationCuisine extends javax.swing.JFrame {
         modeljTablePrepa.addColumn("En préparation");
         modeljTablePrepa.addColumn("A enlever");
         modeljTablePrepa.addColumn("Enlevé");
+        
+        modelCommande.addColumn("Quantité");
+        modelCommande.addColumn("Plat");
+        modelCommande.addColumn("Table");
+        modelCommande.addColumn("Heure");
+        
+        deserializeModelObject();
     }
 
     /**
@@ -220,7 +249,61 @@ public class ApplicationCuisine extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void serializeModelObject() {
+        
+        try {
+            FileOutputStream fos = new FileOutputStream("cuisineCommande.data");
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+            oos.writeObject(modelCommande.getDataVector());
+            oos.close();
+            
+            fos = new FileOutputStream("cuisinePrepa.data");
+            oos = new ObjectOutputStream(fos);
+            oos.writeObject(modeljTablePrepa.getDataVector());
+            oos.close();
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(ApplicationCuisine.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(ApplicationCuisine.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
     
+    private void deserializeModelObject() {
+        try {
+            /////////// Deserialisation des commandes
+            FileInputStream fis = new FileInputStream("cuisineCommande.data");
+            ObjectInputStream ois = new ObjectInputStream(fis);
+            
+            Vector columnIdentifiers = new Vector();
+            for(int i=0; i<modelCommande.getColumnCount(); i++)
+                columnIdentifiers.add(modelCommande.getColumnName(i));
+            
+            modelCommande.setDataVector((Vector)ois.readObject(), columnIdentifiers);
+
+            jTableCommande.setModel(modelCommande);
+
+            /////////// Deserialisation des preparations
+            fis = new FileInputStream("cuisinePrepa.data");
+            ois = new ObjectInputStream(fis);
+            
+            columnIdentifiers = new Vector();
+            for(int i=0; i<modeljTablePrepa.getColumnCount(); i++)
+                columnIdentifiers.add(modeljTablePrepa.getColumnName(i));
+            
+            modeljTablePrepa.setDataVector((Vector)ois.readObject(), columnIdentifiers);
+            jTablePrep.setModel(modeljTablePrepa);
+            
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(ApplicationCuisine.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(ApplicationCuisine.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(ApplicationCuisine.class.getName()).log(Level.SEVERE, null, ex);
+        } 
+        //catch (ClassNotFoundException ex) {
+//            Logger.getLogger(ApplicationCuisine.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+    }
     private void showCommandeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_showCommandeMouseClicked
         // TODO add your handling code here:
         String[] donneesCommande = new String[4];
@@ -232,12 +315,7 @@ public class ApplicationCuisine extends javax.swing.JFrame {
         StringSlicer ss = new StringSlicer(msg, ";");
         ss.getComponents(true);
         
-        DefaultTableModel model = new DefaultTableModel();
-        model.addColumn("Quantité");
-        model.addColumn("Plat");
-        model.addColumn("Table");
-        model.addColumn("Heure");
-        LinkedHashSet<String> hashSet = ss.listUniqueComponents();
+        Vector<String> hashSet = ss.listComponents();
 
         for(String s: hashSet)
         {
@@ -255,11 +333,11 @@ public class ApplicationCuisine extends javax.swing.JFrame {
             String current_time_str = time_formatter.format(System.currentTimeMillis());
             
             //System.out.println(donneesCommande[0] + donneesCommande[1] + donneesCommande[2] + donneesCommande[3]);
-            model.addRow(new Object[] { donneesCommande[1] , donneesCommande[2] , donneesCommande[0], current_time_str });
+            modelCommande.addRow(new Object[] { donneesCommande[1] , donneesCommande[2] , donneesCommande[0], current_time_str });
             modeljTablePrepa.addRow(new Object[] { donneesCommande[1] , donneesCommande[2] , donneesCommande[0], current_time_str.split(" ")[1], false, false, false });
         }
-
-        this.jTableCommande.setModel(model);
+        serializeModelObject();
+        this.jTableCommande.setModel(modelCommande);
         this.jTablePrep.setModel(modeljTablePrepa);
         
     }//GEN-LAST:event_showCommandeMouseClicked

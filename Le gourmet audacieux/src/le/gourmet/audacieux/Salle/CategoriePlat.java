@@ -5,13 +5,15 @@
  */
 package le.gourmet.audacieux.Salle;
 
+import java.io.Serializable;
+
 /**
  *
  * @author Alessandro Aloisio
  */
-public class CategoriePlat{
+public class CategoriePlat implements Serializable {
     
-    protected static String categorie = null;
+    protected String categorie = null;
     
     static final String PLAT_PRINCIPAL = "PP";
     static final String DESSERT = "D";

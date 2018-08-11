@@ -29,8 +29,6 @@ public class PlatPrincipal extends Plat {
     
     static {
         
-        categorie = CategoriePlat.PLAT_PRINCIPAL; 
-        
         plats = new Hashtable<String, Object>();
         
         String line;
@@ -49,20 +47,16 @@ public class PlatPrincipal extends Plat {
 
         } catch (FileNotFoundException ex) {
             ex.printStackTrace();
-        } catch (IOException ex) {
+        } catch (IOException ex) {  
             ex.printStackTrace();
         }
-//        plats.put("FE", new PlatPrincipal("Filet de boeuf Enfer des papilles", 16.8));
-//        plats.put("VRH", new PlatPrincipal("Veau au rollmops sauce herve", 15.75));
-//        plats.put("CC", new PlatPrincipal("Cabillaud chantilly de Terre Neuve", 16.9));
-//        plats.put("GF", new PlatPrincipal("Gruyère farci aux rognons-téquilla", 13.4));
-//        plats.put("PA", new PlatPrincipal("Potée auvergnate au miel", 12.5));
         
     }
     
     public PlatPrincipal(String nom, double prix) {
         super(prix);
         this.nom=nom;
+        this.categorie = CategoriePlat.DESSERT;
     }
     
     public PlatPrincipal(String nom) {

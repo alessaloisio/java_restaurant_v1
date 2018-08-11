@@ -19,8 +19,6 @@ public class Dessert extends Plat {
     
     static {
         
-        categorie = CategoriePlat.DESSERT; 
-        
         plats = new Hashtable<String, Object>();
         
         plats.put("D_MC", new Dessert("Mousse au choclot salé", 5.35));
@@ -34,6 +32,7 @@ public class Dessert extends Plat {
     public Dessert(String nom, double prix) {
         super(prix);
         this.nom=nom;
+        this.categorie = CategoriePlat.DESSERT; 
     }
     
     public Dessert(String nom) {

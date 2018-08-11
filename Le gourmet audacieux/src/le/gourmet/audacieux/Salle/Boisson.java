@@ -13,10 +13,6 @@ public class Boisson extends Plat{
     
     private String nom = "Boissons avec repas";
     
-    static {
-        categorie = CategoriePlat.BOISSON;
-    }
-    
     public Boisson(double prix, boolean servis) {
         super(prix, servis);
         categorie = CategoriePlat.BOISSON;

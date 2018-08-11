@@ -24,6 +24,7 @@ import java.awt.Insets;
 import java.awt.event.MouseEvent;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -104,19 +105,11 @@ public class ApplicationSalle extends javax.swing.JFrame {
 //        XMLSerial.addServeur("garcia", "gardan");
         nbs = new NetworkBasicServer(Integer.parseInt(prop.getProperty("portServ2")), this.CommandeEnvoyeeCheckBox);
         nbsPlatsPrets = new NetworkBasicServer(Integer.parseInt(prop.getProperty("portServ3")), this.PlatsPretCheckBox);
-        
-
-//        try (
-//                FileInputStream fis = new FileInputStream("tables.data");
-//                ObjectInputStream ois = new ObjectInputStream(fis);) {
-//                Vector<Table> tableTmp = (Vector<Table>) ois.readObject();
-//                System.out.println(table);
-//        } catch (Exception e) {
-//            //e.printStackTrace();
-//}
     }
 
     private void LoggedFrame() {
+        
+        deserializeTableObject();
         
         loggedFrame.setTitle(prop.getProperty("nomResto") +" : "+ serveur.getLogin());
         
@@ -145,7 +138,7 @@ public class ApplicationSalle extends javax.swing.JFrame {
                 dessertsBox.addItem(key + ": " + Dessert.plats.get(key));
             });  
             
-        }else if(tempTable != null) {
+        }else if(tempTable != null) { //Changement de table, demande de nouveau serveur
             
             boolean continuer = true;
             
@@ -174,15 +167,13 @@ public class ApplicationSalle extends javax.swing.JFrame {
                 nbTableOccupe++;
                 table.get(tableCourant).idServeur = serveur.getLogin();
             }
-
+            
             couvertsLabel.setText(Integer.toString(table.get(tableCourant).nbCouverts));
             platsAttente.setModel(createListData(false));
             listPlats.setModel(createListData(true));
-            
             tempTable = null;
-             
         }
-        
+         
     }
 
     /**
@@ -997,6 +988,7 @@ public class ApplicationSalle extends javax.swing.JFrame {
                 if (reply == JOptionPane.OK_OPTION) {
                     // On continue avec 
                     String userName = userNameField.getText();
+
                 }else{
                     continuer = false;
                     loginField.setText("");
@@ -1050,12 +1042,13 @@ public class ApplicationSalle extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_tableBoxItemStateChanged
 
+    // Mettre à jour le contenu des jTables
     private DefaultListModel createListData(boolean servis){
         
         DefaultListModel model = new DefaultListModel();
         
         // !! récupérer seulement les siens
-           
+        
         if(table.get(tableCourant).idServeur.equals(serveur.getLogin())) {
             
             for(CommandePlat item : table.get(tableCourant).plats){
@@ -1084,6 +1077,38 @@ public class ApplicationSalle extends javax.swing.JFrame {
         return model;
     }
     
+    private void serializeTableObject() {
+        try {
+            FileOutputStream fos = new FileOutputStream("tables.data");
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+            for(int i=0; i<table.size(); i++)
+                oos.writeObject(table.get(i));
+            oos.close();
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(ApplicationSalle.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(ApplicationSalle.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    private void deserializeTableObject() {
+        try {
+            FileInputStream fis = new FileInputStream("tables.data");
+            ObjectInputStream ois = new ObjectInputStream(fis);
+            // On le laisse boucler jusqu'à exception pour lire toutes les tables
+            while(true)
+               table.add((Table) ois.readObject());
+            
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(ApplicationSalle.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(ApplicationSalle.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(ApplicationSalle.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    
     private void btnPlatsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnPlatsMouseClicked
         
         int nbCouverts = 0;
@@ -1104,18 +1129,6 @@ public class ApplicationSalle extends javax.swing.JFrame {
                 }
                 
                 if(nbCouverts > 0 && continuer == 0) { 
-
-                    try {
-                        FileOutputStream fos = new FileOutputStream("tables.data");
-                        ObjectOutputStream oos = new ObjectOutputStream(fos);
-
-                        oos.writeObject(table);
-                        oos.close();
-                    } catch (FileNotFoundException ex) {
-                        Logger.getLogger(ApplicationSalle.class.getName()).log(Level.SEVERE, null, ex);
-                    } catch (IOException ex) {
-                        Logger.getLogger(ApplicationSalle.class.getName()).log(Level.SEVERE, null, ex);
-                    }
                     
                     //get code
                     plat = new PlatPrincipal(platsBox.getSelectedItem().toString().split(":")[0]);
@@ -1130,6 +1143,8 @@ public class ApplicationSalle extends javax.swing.JFrame {
                     platsAttente.setModel(createListData(false));
                     
                     table.get(tableCourant).addition+=(plat.getPrix()*nbCouverts);
+                    
+                    serializeTableObject();
                     
                     
                 }else{
@@ -1165,6 +1180,9 @@ public class ApplicationSalle extends javax.swing.JFrame {
                     platsAttente.setModel(createListData(false));
                     
                     table.get(tableCourant).addition+=(plat.getPrix()*nbCouverts);
+                    
+                    serializeTableObject();
+                    
                 }else{
                     System.out.println("Quantité inférieur à min 1");
                 }
@@ -1231,6 +1249,9 @@ public class ApplicationSalle extends javax.swing.JFrame {
             listPlats.setModel(createListData(true));
             
             table.get(tableCourant).addition+=(plat.getPrix());
+            
+            serializeTableObject();
+                    
         }else{
             System.out.println("Vous devez choisir une table");
         }
