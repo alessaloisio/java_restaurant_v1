@@ -53,6 +53,7 @@ class ApplicationCuisineBeans implements TimeComputingBean {
     public void ingredientsReceived(IngredientsEvent e)
     {
         System.out.println("+++++++++ !!!!! "+ e.toString() + "!!!!");
+        
     }
     
 }

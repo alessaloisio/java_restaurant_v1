@@ -87,6 +87,7 @@ public class GetRecipeBean {
         {
             TimeComputingBean obj = (TimeComputingBean) recipeListeners.elementAt(i);
             obj.ingredientsReceived(e);
+            
         }
     }
     
