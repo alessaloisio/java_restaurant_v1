@@ -16,14 +16,19 @@ public class GetRecipeBean {
     private String nomPlat;
     private int quantitePlat;
     private boolean enMarche;
-    
+    private int multipleDeclenchement;
+    private int niveauxAlerte; 
     private Vector recipeListeners;
     
+    final int multipleDeclenchementParDefaut = 5; 
+
     public GetRecipeBean()
     {
         quantitePlat = 0;
         enMarche = false;
         recipeListeners = new Vector();
+        multipleDeclenchement = multipleDeclenchementParDefaut;
+        niveauxAlerte = 3; 
     }
     
     public GetRecipeBean(String nom, int quantite)
@@ -37,6 +42,11 @@ public class GetRecipeBean {
     
     public boolean isEnMarche() { return enMarche; }
     public void setEnMarche(boolean em) { enMarche = em; }
+    public int getPeriode() { return multipleDeclenchement; }
+    public void setPeriode(int m) { multipleDeclenchement = m; }
+    public int getNiveauxAlerte() { return niveauxAlerte; }
+    public void setNiveauxAlerte (int na) {niveauxAlerte = na; }
+
     
     public void init() { setEnMarche(true); }
     public void stop() { setEnMarche(false); }
@@ -48,7 +58,8 @@ public class GetRecipeBean {
             System.out.println("Surveillance des alertes non enclenchée !");
             return;
         }
-       
+        
+        notifyingredientsReceived(1);
     }
     
     public void addRecipeListener (TimeComputingBean tm) 

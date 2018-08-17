@@ -43,7 +43,6 @@ public class ApplicationCuisine extends javax.swing.JFrame {
     
     DefaultTableModel modeljTablePrepa;
     DefaultTableModel modelCommande = new DefaultTableModel();
-    
     Properties prop;
     /**
      * Creates new form ApplicationCuisine

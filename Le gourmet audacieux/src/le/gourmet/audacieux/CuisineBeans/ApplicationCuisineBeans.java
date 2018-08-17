@@ -5,6 +5,13 @@
  */
 package le.gourmet.audacieux.CuisineBeans;
 
+import java.beans.*;
+import java.io.*;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+
 /**
  *
  * @author Alessandro Aloisio
@@ -13,13 +20,31 @@ class ApplicationCuisineBeans implements TimeComputingBean {
     
     public static void main(String args[])
     {
-        GetRecipeBean recipe = new GetRecipeBean("CC", 3);
+        System.out.println("Gwer");
+        ApplicationCuisineBeans recipe = new ApplicationCuisineBeans("CC", 3);
         
+        
+    }
+    
+    public ApplicationCuisineBeans()
+    {
+    
     }
     
     public ApplicationCuisineBeans(String nom, int quantite)
     {
-        GetRecipeBean recipe = new GetRecipeBean(nom, quantite);
+        //GetRecipeBean recipe = new GetRecipeBean(nom, quantite);
+        GetRecipeBean recipe = null;
+        
+        try
+        {
+            recipe = (GetRecipeBean) Beans.instantiate(null, "GetRecipeBean");
+        } catch (IOException ex) {
+            Logger.getLogger(ApplicationCuisineBeans.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(ApplicationCuisineBeans.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
         recipe.addRecipeListener(this);
         recipe.init();
         recipe.run();
