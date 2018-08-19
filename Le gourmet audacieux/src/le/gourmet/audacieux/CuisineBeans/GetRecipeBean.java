@@ -5,13 +5,24 @@
  */
 package le.gourmet.audacieux.CuisineBeans;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Serializable;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import le.gourmet.audacieux.Salle.ApplicationSalle;
 
 /**
  *
  * @author alex_
  */
-public class GetRecipeBean {
+public class GetRecipeBean implements Serializable {
     
     private String nomPlat;
     private int quantitePlat;
@@ -19,6 +30,7 @@ public class GetRecipeBean {
     private int multipleDeclenchement;
     private int niveauxAlerte; 
     private Vector recipeListeners;
+    private String[] ingredients;
     
     final int multipleDeclenchementParDefaut = 5; 
 
@@ -33,21 +45,41 @@ public class GetRecipeBean {
     
     public GetRecipeBean(String nom, int quantite)
     {
+        
         nomPlat = nom;
         quantitePlat = quantite;
-        
+
         enMarche = false;
         recipeListeners = new Vector();
+
+        try {
+            
+            BufferedReader reader = new BufferedReader(new FileReader("ingredients.txt"));
+            
+            String line;
+            line = reader.readLine();
+            
+            while (line != null)
+            {
+                ingredients = line.split(":");
+                
+                if(ingredients[0].equals(nom))
+                    line = null;
+                else
+                    line = reader.readLine();
+            }
+       
+        } catch (IOException ex) {
+            Logger.getLogger(ApplicationSalle.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
     }
     
     public boolean isEnMarche() { return enMarche; }
     public void setEnMarche(boolean em) { enMarche = em; }
-    public int getPeriode() { return multipleDeclenchement; }
-    public void setPeriode(int m) { multipleDeclenchement = m; }
-    public int getNiveauxAlerte() { return niveauxAlerte; }
-    public void setNiveauxAlerte (int na) {niveauxAlerte = na; }
+    public int getQuantitePlat() { return quantitePlat; };
+    public String[] getIngredients() { return ingredients; };
 
-    
     public void init() { setEnMarche(true); }
     public void stop() { setEnMarche(false); }
     
@@ -59,7 +91,7 @@ public class GetRecipeBean {
             return;
         }
         
-        notifyingredientsReceived(1);
+        notifyingredientsReceived(this.getQuantitePlat(), this.getIngredients());
     }
     
     public void addRecipeListener (TimeComputingBean tm) 
@@ -79,15 +111,14 @@ public class GetRecipeBean {
     }
     
     // ce qui est activé au déclenchement d'une alerte
-    protected void notifyingredientsReceived(int quantite)
+    protected void notifyingredientsReceived(int quantite, String[] ing)
     {
-        IngredientsEvent e = new IngredientsEvent(this, quantite);
+        IngredientsEvent e = new IngredientsEvent(this, quantite, ing);
         
         for(int i = 0; i < recipeListeners.size(); i++)
         {
             TimeComputingBean obj = (TimeComputingBean) recipeListeners.elementAt(i);
             obj.ingredientsReceived(e);
-            
         }
     }
     

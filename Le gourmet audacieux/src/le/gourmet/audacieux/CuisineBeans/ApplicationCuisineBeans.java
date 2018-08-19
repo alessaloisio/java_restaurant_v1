@@ -18,32 +18,21 @@ import java.util.logging.Logger;
  */
 class ApplicationCuisineBeans implements TimeComputingBean {
     
+    //private final PropertyChangeSupport changeSupport;
+    
     public static void main(String args[])
     {
-        System.out.println("Gwer");
-        ApplicationCuisineBeans recipe = new ApplicationCuisineBeans("CC", 3);
-        
+        ApplicationCuisineBeans recipe = new ApplicationCuisineBeans("FE", 3);
         
     }
     
     public ApplicationCuisineBeans()
     {
-    
     }
     
     public ApplicationCuisineBeans(String nom, int quantite)
     {
-        //GetRecipeBean recipe = new GetRecipeBean(nom, quantite);
-        GetRecipeBean recipe = null;
-        
-        try
-        {
-            recipe = (GetRecipeBean) Beans.instantiate(null, "GetRecipeBean");
-        } catch (IOException ex) {
-            Logger.getLogger(ApplicationCuisineBeans.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(ApplicationCuisineBeans.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        GetRecipeBean recipe = new GetRecipeBean(nom, quantite);
         
         recipe.addRecipeListener(this);
         recipe.init();
@@ -53,7 +42,13 @@ class ApplicationCuisineBeans implements TimeComputingBean {
     public void ingredientsReceived(IngredientsEvent e)
     {
         System.out.println("+++++++++ !!!!! "+ e.toString() + "!!!!");
+        String[] plat = e.getIngredients();
+        String[] ingr = plat[1].split(",");
         
+        PlatAPreparer infosPlat = new PlatAPreparer(plat[0], ingr.length / 3 * 10);
+        
+        //DishReadyBean dishReady = new DishReadyBean();
+
     }
     
 }

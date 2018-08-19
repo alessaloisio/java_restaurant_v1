@@ -15,5 +15,4 @@ import java.util.*;
 public interface TimeComputingBean extends EventListener 
 {
     public void ingredientsReceived(IngredientsEvent e);
-    //public void getPlat();
 }

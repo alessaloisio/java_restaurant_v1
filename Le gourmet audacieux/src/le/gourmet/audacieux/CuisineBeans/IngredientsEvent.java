@@ -14,16 +14,24 @@ import java.util.EventObject;
 public class IngredientsEvent extends EventObject {
     
     private int quantite;
+    private String[] ingredients;
     
-    public IngredientsEvent(Object source, int q)
+    public IngredientsEvent(Object source, int q, String[] i)
     {
         super(source);
         quantite = q;
+        ingredients = i;
     }
     
     public int getQuantite()
     {
         return quantite;
+    }
+    
+    
+    public String[] getIngredients()
+    {
+        return ingredients;
     }
     
 }

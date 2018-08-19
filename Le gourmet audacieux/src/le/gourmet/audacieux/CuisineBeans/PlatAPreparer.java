@@ -9,8 +9,15 @@ package le.gourmet.audacieux.CuisineBeans;
  
  * @author alex_
  */
-public class PlatAPreparer implements TimeComputingBean{
-    private String nom;
-    private double tempsCuisson;
+public class PlatAPreparer{
+    public String nom;
+    public double tempsCuisson;
     
+    public PlatAPreparer(){};
+    
+    public PlatAPreparer(String nom, double temps)
+    {
+        this.nom = nom;
+        this.tempsCuisson = temps;
+    };
 }

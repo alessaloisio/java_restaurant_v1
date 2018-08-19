@@ -1,0 +1,5 @@
+CC:cabillaud,chantilly,pomme de terre,olive
+VHR:veau,rollmops,fromage de herve
+FE:boeuf,piments,fromage cremeux
+GF:gruyere,rognons,tequilla
+PA:potee,aubergine,miel
