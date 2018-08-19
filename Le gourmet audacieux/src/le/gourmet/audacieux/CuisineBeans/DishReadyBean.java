@@ -12,6 +12,8 @@ import java.io.Serializable;
  *
  * @author alex_
  */
+
+//https://kodejava.org/how-do-i-listen-for-beans-property-change-event/
 public class DishReadyBean implements Serializable {
     
     public static final String PROP_SAMPLE_PROPERTY = "sampleProperty";
@@ -23,6 +25,14 @@ public class DishReadyBean implements Serializable {
     public DishReadyBean() {
         propertySupport = new PropertyChangeSupport(this);
     }
+    
+    public DishReadyBean(PlatAPreparer apreparer) {
+        
+        
+        
+        propertySupport = new PropertyChangeSupport(this);
+    }
+    
     
     public String getSampleProperty() {
         return sampleProperty;

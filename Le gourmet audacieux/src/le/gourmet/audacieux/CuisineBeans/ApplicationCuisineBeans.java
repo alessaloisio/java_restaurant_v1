@@ -18,8 +18,6 @@ import java.util.logging.Logger;
  */
 class ApplicationCuisineBeans implements TimeComputingBean {
     
-    //private final PropertyChangeSupport changeSupport;
-    
     public static void main(String args[])
     {
         ApplicationCuisineBeans recipe = new ApplicationCuisineBeans("FE", 3);
@@ -47,7 +45,7 @@ class ApplicationCuisineBeans implements TimeComputingBean {
         
         PlatAPreparer infosPlat = new PlatAPreparer(plat[0], ingr.length / 3 * 10);
         
-        //DishReadyBean dishReady = new DishReadyBean();
+        DishReadyBean dishReady = new DishReadyBean(infosPlat);
 
     }
     
