@@ -13,7 +13,9 @@ import java.util.Vector;
 
 /**
  *
- * @author Danie
+ * @author Daniel Garcia Lecloux
+ * @author Alessandro Aloisio
+ * @version 1.0
  */
 public class StringSlicer {
     
@@ -35,7 +37,7 @@ public class StringSlicer {
 
      *
      * @param afficher
-     * @return
+     * @return int
      */
     public int getComponents(boolean afficher)
     {
@@ -56,7 +58,7 @@ public class StringSlicer {
     
     /** Fournit un Vector qui contient les composantes détectées.
      *
-     * @return
+     * @return Un Vector avec toutes les composantes
      */
     public Vector listComponents()
     {
@@ -71,7 +73,7 @@ public class StringSlicer {
     /** Fournit un LinkedHashSet qui contient les composantes détectées sans répétitions et dans
 leur ordre d'apparition.
      *
-     * @return
+     * @return Un LinkedHashSet avec les composantes uniques
      */
     public LinkedHashSet listUniqueComponents() 
     {

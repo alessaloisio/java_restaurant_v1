@@ -90,7 +90,8 @@ public class GetRecipeBean implements Serializable {
             System.out.println("Surveillance des alertes non enclenchée !");
             return;
         }
-        
+        System.out.println(this.getQuantitePlat());
+        System.out.println(this.getIngredients().length);
         notifyingredientsReceived(this.getQuantitePlat(), this.getIngredients());
     }
     

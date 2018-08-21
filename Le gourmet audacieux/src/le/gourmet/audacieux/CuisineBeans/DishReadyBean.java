@@ -7,6 +7,7 @@ package le.gourmet.audacieux.CuisineBeans;
 
 import java.beans.*;
 import java.io.Serializable;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -19,6 +20,7 @@ public class DishReadyBean implements Serializable {
     public static final String PROP_SAMPLE_PROPERTY = "sampleProperty";
     
     private String sampleProperty;
+    public int n;
     
     private PropertyChangeSupport propertySupport;
     
@@ -28,7 +30,17 @@ public class DishReadyBean implements Serializable {
     
     public DishReadyBean(PlatAPreparer apreparer) {
         
+        Object[] options = {"OK"};
         
+        n = JOptionPane.showOptionDialog(null,
+            "Le plat "+apreparer.nom+" sera prêt dans "+apreparer.tempsCuisson+" min",
+            "Un plat a été lancé !",
+            JOptionPane.YES_NO_OPTION,
+            JOptionPane.QUESTION_MESSAGE,
+            null,     //do not use a custom Icon
+            options,  //the titles of buttons
+            options[0]
+        );
         
         propertySupport = new PropertyChangeSupport(this);
     }
