@@ -1,15 +1,8 @@
 package StringSlicer;
 
-
 import java.awt.Component;
 import java.util.LinkedHashSet;
 import java.util.Vector;
-
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 
 /**
  *
@@ -36,8 +29,8 @@ public class StringSlicer {
     /** Fournit le nombre de composantes et les affiche.
 
      *
-     * @param afficher
-     * @return int
+     * @param Si affichage des composantes requis
+     * @return Le nombre de composantes
      */
     public int getComponents(boolean afficher)
     {
@@ -50,7 +43,7 @@ public class StringSlicer {
             for(String str : temp)
                 System.out.println(str);
 
-            return 1;
+            return temp.length;
         }
         return 0;
             
